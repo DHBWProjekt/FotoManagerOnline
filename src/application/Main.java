@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -28,20 +30,20 @@ public class Main extends Application {
 
 	private ImageView activeImageView;
 
+	private int counter = 0;
+
 	public void start(Stage primaryStage) {
 		try {
 			BorderPane root = new BorderPane();
 			centerAnchorPane = new AnchorPane();
-			centerAnchorPane.prefWidthProperty().bind(root.widthProperty());
-			centerAnchorPane.prefHeightProperty().bind(root.heightProperty());
-
 			centerAnchorPane.getStyleClass().add("centerAnchorPane");
 			this.initAnchorPangeDragAndDrop(centerAnchorPane);
 			root.setCenter(centerAnchorPane);
-			activeImageView = createImageView(centerAnchorPane.widthProperty());
+			activeImageView = createImageView(root.widthProperty());
 			centerAnchorPane.getChildren().add(activeImageView);
 
 			Scene scene = new Scene(root, 400, 400);
+			scene.setOnKeyReleased(e -> handleKeyEvent(e));
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -81,7 +83,7 @@ public class Main extends Application {
 				 * TODO first picture should be shown
 				 */
 
-				setPictureToPane(listImages.get(0));
+				setPictureToPane(listImages.get(counter));
 
 				System.out.println("Erstes Bild wird angezeigt");
 			}
@@ -112,6 +114,31 @@ public class Main extends Application {
 		// resize based on the scnece
 		imageView.fitWidthProperty().bind(widthProperty);
 		return imageView;
+	}
+
+	// *****************************//
+
+	private void handleKeyEvent(KeyEvent e) {
+
+		System.out.println(e.getCode());
+		System.out.println(counter);
+		if (e.getCode().equals(KeyCode.UP)) {
+
+		} else if (e.getCode().equals(KeyCode.RIGHT)) {
+			if (counter < listImages.size() - 1) {
+				counter++;
+				setPictureToPane(listImages.get(counter));
+			}
+		} else if (e.getCode().equals(KeyCode.LEFT)) {
+			if (counter > 0) {
+				counter--;
+				setPictureToPane(listImages.get(counter));
+			}
+
+		} else if (e.getCode().equals(KeyCode.LEFT)) {
+
+		}
+
 	}
 
 	// *****************************//

@@ -3,3 +3,7 @@
 .root{-fx-background-color: black;}
 
 .centerAnchorPane{-fx-background-color: red;}
+
+.pathtext{
+	-fx-text-alignment: center ;
+}

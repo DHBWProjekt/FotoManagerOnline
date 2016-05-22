@@ -1,7 +1,6 @@
 package application;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import javafx.application.Application;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Dragboard;
@@ -17,12 +17,17 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	private URI savePath;
-	private URI deletePath;
+	private File savePath;
+	private File deletePath;
+
+	private Label path1Label = new Label("Path 1");
+	private Label path2Label = new Label("Path 2");
 
 	private List<File> listImages = new ArrayList<File>();
 
@@ -32,15 +37,40 @@ public class Main extends Application {
 
 	private int counter = 0;
 
+	private BorderPane topBorderPane;
+	private BorderPane bottomBorderPane;
+
 	public void start(Stage primaryStage) {
 		try {
-			BorderPane root = new BorderPane();
+			StackPane root = new StackPane();
+			BorderPane borderPane = new BorderPane();
 			centerAnchorPane = new AnchorPane();
 			centerAnchorPane.getStyleClass().add("centerAnchorPane");
-			this.initAnchorPangeDragAndDrop(centerAnchorPane);
-			root.setCenter(centerAnchorPane);
-			activeImageView = createImageView(root.widthProperty());
+			this.initAnchorPangeDragAndDrop(borderPane);
+			borderPane.setCenter(centerAnchorPane);
+
+			topBorderPane = new BorderPane();
+			topBorderPane.setCenter(path1Label);
+
+			topBorderPane.setOnMouseReleased(e -> {
+				savePath = choosePath();
+				path2Label.setText(savePath.toURI().toString());
+			});
+
+			bottomBorderPane = new BorderPane();
+			bottomBorderPane.setCenter(path2Label);
+
+			bottomBorderPane.setOnMouseReleased(e -> {
+				deletePath = choosePath();
+				path1Label.setText(deletePath.toURI().toString());
+			});
+
+			borderPane.setTop(topBorderPane);
+			borderPane.setBottom(bottomBorderPane);
+			activeImageView = createImageView(borderPane.widthProperty());
 			centerAnchorPane.getChildren().add(activeImageView);
+			root.getChildren().add(centerAnchorPane);
+			root.getChildren().add(borderPane);
 
 			Scene scene = new Scene(root, 400, 400);
 			scene.setOnKeyReleased(e -> handleKeyEvent(e));
@@ -65,7 +95,7 @@ public class Main extends Application {
 			if (dragBoard.hasFiles() || dragBoard.hasUrl()) {
 				event.acceptTransferModes(TransferMode.ANY);
 			}
-			event.consume();
+			// event.consume();
 		});
 
 		node.setOnDragDropped(event -> {
@@ -143,19 +173,27 @@ public class Main extends Application {
 
 	// *****************************//
 
-	public URI getSavePath() {
+	private File choosePath() {
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle("Choose Path");
+		File file = chooser.showDialog(new Stage());
+
+		return file;
+	}
+
+	public File getSavePath() {
 		return savePath;
 	}
 
-	public void setSavePath(URI savePath) {
+	public void setSavePath(File savePath) {
 		this.savePath = savePath;
 	}
 
-	public URI getDeletePath() {
+	public File getDeletePath() {
 		return deletePath;
 	}
 
-	public void setDeletePath(URI deletePath) {
+	public void setDeletePath(File deletePath) {
 		this.deletePath = deletePath;
 	}
 

@@ -1,6 +1,8 @@
 package application;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +25,11 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	private File savePath;
-	private File deletePath;
+	private File pathUp;
+	private File pathDown;
 
-	private Label path1Label = new Label("Path 1");
-	private Label path2Label = new Label("Path 2");
+	private Label labelPathUp = new Label("Path Up");
+	private Label labelPathDown = new Label("Path Down");
 
 	private List<File> listImages = new ArrayList<File>();
 
@@ -50,19 +52,19 @@ public class Main extends Application {
 			borderPane.setCenter(centerAnchorPane);
 
 			topBorderPane = new BorderPane();
-			topBorderPane.setCenter(path1Label);
+			topBorderPane.setCenter(labelPathUp);
 
 			topBorderPane.setOnMouseReleased(e -> {
-				savePath = choosePath();
-				path2Label.setText(savePath.toURI().toString());
+				pathUp = choosePath();
+				labelPathUp.setText(pathUp.toURI().toString());
 			});
 
 			bottomBorderPane = new BorderPane();
-			bottomBorderPane.setCenter(path2Label);
+			bottomBorderPane.setCenter(labelPathDown);
 
 			bottomBorderPane.setOnMouseReleased(e -> {
-				deletePath = choosePath();
-				path1Label.setText(deletePath.toURI().toString());
+				pathDown = choosePath();
+				labelPathDown.setText(pathDown.toURI().toString());
 			});
 
 			borderPane.setTop(topBorderPane);
@@ -152,20 +154,29 @@ public class Main extends Application {
 
 		System.out.println(e.getCode());
 		System.out.println(counter);
+
 		if (e.getCode().equals(KeyCode.UP)) {
 
-		} else if (e.getCode().equals(KeyCode.RIGHT)) {
-			if (counter < listImages.size() - 1) {
-				counter++;
-				setPictureToPane(listImages.get(counter));
+			boolean worked = nextPicture();
+
+			int counter2 = counter;
+			if (worked == true) {
+				counter2--;
 			}
-		} else if (e.getCode().equals(KeyCode.LEFT)) {
-			if (counter > 0) {
-				counter--;
-				setPictureToPane(listImages.get(counter));
+			System.out.println(listImages.get(counter2).toPath());
+			System.out.println(pathUp.toPath());
+			File file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
+			try {
+				Files.move(listImages.get(counter2).toPath(), file.toPath());
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
+		} else if (e.getCode().equals(KeyCode.RIGHT)) {
+			nextPicture();
 		} else if (e.getCode().equals(KeyCode.LEFT)) {
+			lastPicture();
 
 		}
 
@@ -173,6 +184,27 @@ public class Main extends Application {
 
 	// *****************************//
 
+	private boolean nextPicture() {
+		if (counter < listImages.size() - 1) {
+			counter++;
+			setPictureToPane(listImages.get(counter));
+			return true;
+		}
+		return false;
+	}
+
+	private void lastPicture() {
+		if (counter > 0) {
+			counter--;
+			setPictureToPane(listImages.get(counter));
+		}
+	}
+
+	private void mooveFile() {
+
+	}
+
+	// *****************************//
 	private File choosePath() {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Choose Path");
@@ -182,19 +214,19 @@ public class Main extends Application {
 	}
 
 	public File getSavePath() {
-		return savePath;
+		return pathUp;
 	}
 
 	public void setSavePath(File savePath) {
-		this.savePath = savePath;
+		this.pathUp = savePath;
 	}
 
 	public File getDeletePath() {
-		return deletePath;
+		return pathDown;
 	}
 
 	public void setDeletePath(File deletePath) {
-		this.deletePath = deletePath;
+		this.pathDown = deletePath;
 	}
 
 	public List<File> getImageFolder() {

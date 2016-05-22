@@ -13,6 +13,7 @@ public class Main extends Application {
 			Scene scene = new Scene(root, 400, 400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			System.out.println("Test");
+			System.out.println("Test2");
 			System.out.println("Git Ist Geil");
 			primaryStage.setScene(scene);
 			primaryStage.show();

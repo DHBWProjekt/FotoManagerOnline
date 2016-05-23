@@ -20,6 +20,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -28,8 +29,9 @@ public class Main extends Application {
 	private File pathUp;
 	private File pathDown;
 
-	private Label labelPathUp = new Label("Path Up");
-	private Label labelPathDown = new Label("Path Down");
+	private Label labelPathUp = new Label("\uf07c");
+	private Label labelPathDown = new Label("\uf07c");
+	private Label labelCenter = new Label("\uf03e");
 
 	private List<File> listImages = new ArrayList<File>();
 
@@ -44,6 +46,7 @@ public class Main extends Application {
 
 	public void start(Stage primaryStage) {
 		try {
+			Font.loadFont(getClass().getResource("resources/fontawesome-webfont.ttf").toExternalForm(), 20);
 			StackPane root = new StackPane();
 			BorderPane borderPane = new BorderPane();
 			centerAnchorPane = new AnchorPane();
@@ -69,6 +72,12 @@ public class Main extends Application {
 
 			borderPane.setTop(topBorderPane);
 			borderPane.setBottom(bottomBorderPane);
+
+			labelCenter.getStyleClass().add("lblCenter");
+			labelPathUp.getStyleClass().add("lblPath");
+			labelPathDown.getStyleClass().add("lblPath");
+			borderPane.setCenter(labelCenter);
+
 			activeImageView = createImageView(borderPane.widthProperty());
 			centerAnchorPane.getChildren().add(activeImageView);
 			root.getChildren().add(centerAnchorPane);

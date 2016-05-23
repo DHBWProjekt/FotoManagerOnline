@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.animation.Interpolator;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
@@ -23,6 +25,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Main extends Application {
 
@@ -45,10 +48,15 @@ public class Main extends Application {
 	private BorderPane bottomBorderPane;
 	private BorderPane centerBorderPane;
 
+	private TranslateTransition animation;
+
+	private StackPane root;
+	private Scene scene;
+
 	public void start(Stage primaryStage) {
 		try {
 			Font.loadFont(getClass().getResource("resources/fontawesome-webfont.ttf").toExternalForm(), 20);
-			StackPane root = new StackPane();
+			root = new StackPane();
 			BorderPane borderPane = new BorderPane();
 			centerAnchorPane = new AnchorPane();
 			centerAnchorPane.getStyleClass().add("centerAnchorPane");
@@ -87,7 +95,14 @@ public class Main extends Application {
 			root.getChildren().add(centerAnchorPane);
 			root.getChildren().add(borderPane);
 
-			Scene scene = new Scene(root, 400, 400);
+			animation = new TranslateTransition(new Duration(500.0), activeImageView);
+			animation.setFromX(1200);
+			animation.setToX(0);
+			// animation.setAutoReverse(true);
+			// animation.setCycleCount(Animation.INDEFINITE);
+			animation.setInterpolator(Interpolator.LINEAR);
+
+			scene = new Scene(root, 600, 600);
 			scene.setOnKeyReleased(e -> handleKeyEvent(e));
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -145,9 +160,9 @@ public class Main extends Application {
 	// *****************************//
 
 	public void setPictureToPane(File pictureFile) {
-
 		Image myImage = new Image(pictureFile.toURI().toString());
 		activeImageView.setImage(myImage);
+		animation.playFromStart();
 
 	}
 
@@ -202,6 +217,7 @@ public class Main extends Application {
 	private boolean nextPicture() {
 		if (counter < listImages.size() - 1) {
 			counter++;
+			animation.setFromX(root.getWidth() * 2);
 			setPictureToPane(listImages.get(counter));
 			return true;
 		}
@@ -211,6 +227,7 @@ public class Main extends Application {
 	private void lastPicture() {
 		if (counter > 0) {
 			counter--;
+			animation.setFromX(root.getWidth() * 2 * (-1));
 			setPictureToPane(listImages.get(counter));
 		}
 	}

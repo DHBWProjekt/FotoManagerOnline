@@ -4,6 +4,24 @@
 
 .centerAnchorPane{-fx-background-color: red;}
 
-.pathtext{
+.lblPath{
+	-fx-font-family: FontAwesome;
 	-fx-text-alignment: center ;
+	-fx-font-size: 50;
+}
+
+.lblPath:hover {    
+	-fx-scale-x: 1.1;    
+	-fx-scale-y: 1.1;
+}
+
+.lblCenter{
+	-fx-font-family: FontAwesome;
+	-fx-font-size: 100;
+}
+
+.centerBP{
+	-fx-border-width: 5;
+	-fx-border-style: dashed; 
+	-fx-border-insets: 20;
 }

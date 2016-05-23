@@ -20,6 +20,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -28,8 +29,9 @@ public class Main extends Application {
 	private File pathUp;
 	private File pathDown;
 
-	private Label labelPathUp = new Label("Path Up");
-	private Label labelPathDown = new Label("Path Down");
+	private Label labelPathUp = new Label("\uf07c");
+	private Label labelPathDown = new Label("\uf07c");
+	private Label labelCenter = new Label("\uf03e");
 
 	private List<File> listImages = new ArrayList<File>();
 
@@ -41,9 +43,11 @@ public class Main extends Application {
 
 	private BorderPane topBorderPane;
 	private BorderPane bottomBorderPane;
+	private BorderPane centerBorderPane;
 
 	public void start(Stage primaryStage) {
 		try {
+			Font.loadFont(getClass().getResource("resources/fontawesome-webfont.ttf").toExternalForm(), 20);
 			StackPane root = new StackPane();
 			BorderPane borderPane = new BorderPane();
 			centerAnchorPane = new AnchorPane();
@@ -69,6 +73,15 @@ public class Main extends Application {
 
 			borderPane.setTop(topBorderPane);
 			borderPane.setBottom(bottomBorderPane);
+
+			labelCenter.getStyleClass().add("lblCenter");
+			centerBorderPane = new BorderPane(labelCenter);
+			centerBorderPane.getStyleClass().add("centerBP");
+			borderPane.setCenter(centerBorderPane);
+
+			labelPathUp.getStyleClass().add("lblPath");
+			labelPathDown.getStyleClass().add("lblPath");
+
 			activeImageView = createImageView(borderPane.widthProperty());
 			centerAnchorPane.getChildren().add(activeImageView);
 			root.getChildren().add(centerAnchorPane);
@@ -94,7 +107,10 @@ public class Main extends Application {
 
 		node.setOnDragOver(event -> {
 			Dragboard dragBoard = event.getDragboard();
-			if (dragBoard.hasFiles() || dragBoard.hasUrl()) {
+			if (dragBoard.hasFiles()) {
+				for (File file : dragBoard.getFiles()) {
+					System.out.println(file.isDirectory());
+				}
 				event.acceptTransferModes(TransferMode.ANY);
 			}
 			// event.consume();
@@ -103,7 +119,6 @@ public class Main extends Application {
 		node.setOnDragDropped(event -> {
 			Dragboard dragBoard = event.getDragboard();
 
-			String url = null;
 			setImageFolder(null);
 
 			if (dragBoard.hasFiles()) {

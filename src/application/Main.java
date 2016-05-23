@@ -271,8 +271,8 @@ public class Main extends Application {
 
 		if (file != null) {
 
-			pathDown = file;
-			labelPathDown.setText(pathDown.toURI().toString());
+			path = file;
+			label.setText(path.toURI().toString());
 		}
 	}
 

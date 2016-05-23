@@ -19,3 +19,9 @@
 	-fx-font-family: FontAwesome;
 	-fx-font-size: 100;
 }
+
+.centerBP{
+	-fx-border-width: 5;
+	-fx-border-style: dashed; 
+	-fx-border-insets: 20;
+}

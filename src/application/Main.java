@@ -43,6 +43,7 @@ public class Main extends Application {
 
 	private BorderPane topBorderPane;
 	private BorderPane bottomBorderPane;
+	private BorderPane centerBorderPane;
 
 	public void start(Stage primaryStage) {
 		try {
@@ -74,9 +75,12 @@ public class Main extends Application {
 			borderPane.setBottom(bottomBorderPane);
 
 			labelCenter.getStyleClass().add("lblCenter");
+			centerBorderPane = new BorderPane(labelCenter);
+			centerBorderPane.getStyleClass().add("centerBP");
+			borderPane.setCenter(centerBorderPane);
+
 			labelPathUp.getStyleClass().add("lblPath");
 			labelPathDown.getStyleClass().add("lblPath");
-			borderPane.setCenter(labelCenter);
 
 			activeImageView = createImageView(borderPane.widthProperty());
 			centerAnchorPane.getChildren().add(activeImageView);

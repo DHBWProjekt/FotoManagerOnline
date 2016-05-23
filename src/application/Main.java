@@ -217,7 +217,7 @@ public class Main extends Application {
 	private boolean nextPicture() {
 		if (counter < listImages.size() - 1) {
 			counter++;
-			animation.setFromX(root.getWidth() * 2);
+			animation.setFromX(root.getWidth());
 			setPictureToPane(listImages.get(counter));
 			return true;
 		}
@@ -227,7 +227,7 @@ public class Main extends Application {
 	private void lastPicture() {
 		if (counter > 0) {
 			counter--;
-			animation.setFromX(root.getWidth() * 2 * (-1));
+			animation.setFromX(root.getWidth() * (-1));
 			setPictureToPane(listImages.get(counter));
 		}
 	}

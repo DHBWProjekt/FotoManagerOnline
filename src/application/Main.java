@@ -60,23 +60,21 @@ public class Main extends Application {
 			BorderPane borderPane = new BorderPane();
 			centerAnchorPane = new AnchorPane();
 			centerAnchorPane.getStyleClass().add("centerAnchorPane");
-			this.initAnchorPangeDragAndDrop(borderPane);
+			this.initAnchorPaneDragAndDrop(borderPane);
 			borderPane.setCenter(centerAnchorPane);
 
 			topBorderPane = new BorderPane();
 			topBorderPane.setCenter(labelPathUp);
 
 			topBorderPane.setOnMouseReleased(e -> {
-				pathUp = choosePath();
-				labelPathUp.setText(pathUp.toURI().toString());
+				setPath(pathUp, labelPathUp);
 			});
 
 			bottomBorderPane = new BorderPane();
 			bottomBorderPane.setCenter(labelPathDown);
 
 			bottomBorderPane.setOnMouseReleased(e -> {
-				pathDown = choosePath();
-				labelPathDown.setText(pathDown.toURI().toString());
+				setPath(pathDown, labelPathDown);
 			});
 
 			borderPane.setTop(topBorderPane);
@@ -116,9 +114,14 @@ public class Main extends Application {
 		launch(args);
 	}
 
-	// ################################################## //
+	/**
+	 * Initializing of DragAndDrop on the given Node
+	 * 
+	 * @param Node
+	 *            - node that should be DragAndDrop-able
+	 */
 
-	public void initAnchorPangeDragAndDrop(Node node) {
+	public void initAnchorPaneDragAndDrop(Node node) {
 
 		node.setOnDragOver(event -> {
 			Dragboard dragBoard = event.getDragboard();
@@ -157,16 +160,30 @@ public class Main extends Application {
 
 	}
 
-	// *****************************//
-
+	/**
+	 * Sets the picture on the imageView
+	 * 
+	 * @param pictureFile
+	 *            - picture that shall be shown
+	 */
 	public void setPictureToPane(File pictureFile) {
+
+		labelPathUp.setVisible(false);
+		labelPathDown.setVisible(false);
+		labelCenter.setVisible(false);
+
 		Image myImage = new Image(pictureFile.toURI().toString());
 		activeImageView.setImage(myImage);
 		animation.playFromStart();
 
 	}
 
-	// *****************************//
+	/**
+	 * Creation of the ImageView, which is binded to the widthProperty
+	 * 
+	 * @param widthProperty
+	 * @return ImageView
+	 */
 
 	private ImageView createImageView(ReadOnlyDoubleProperty widthProperty) {
 		// maintain aspect ratio
@@ -178,7 +195,9 @@ public class Main extends Application {
 		return imageView;
 	}
 
-	// *****************************//
+	/**
+	 * Initializing of the handleKeyEvent method of the setOnKeyReleased method
+	 */
 
 	private void handleKeyEvent(KeyEvent e) {
 
@@ -212,7 +231,12 @@ public class Main extends Application {
 
 	}
 
-	// *****************************//
+	/**
+	 * Sets the counter one step forward, if the counter is smaller than the
+	 * size of the Image-List
+	 * 
+	 * @return boolean - if the stepping forward was successful
+	 */
 
 	private boolean nextPicture() {
 		if (counter < listImages.size() - 1) {
@@ -224,6 +248,9 @@ public class Main extends Application {
 		return false;
 	}
 
+	/**
+	 * Sets the counter one step back, if the counter is bigger than Zero.
+	 */
 	private void lastPicture() {
 		if (counter > 0) {
 			counter--;
@@ -238,6 +265,17 @@ public class Main extends Application {
 		 */
 	}
 
+	private void setPath(File path, Label label) {
+
+		File file = choosePath();
+
+		if (file != null) {
+
+			pathDown = file;
+			labelPathDown.setText(pathDown.toURI().toString());
+		}
+	}
+
 	// *****************************//
 	private File choosePath() {
 		DirectoryChooser chooser = new DirectoryChooser();
@@ -246,6 +284,10 @@ public class Main extends Application {
 
 		return file;
 	}
+
+	/*
+	 * Getter and Setter section
+	 */
 
 	public File getSavePath() {
 		return pathUp;

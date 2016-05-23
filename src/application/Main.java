@@ -94,7 +94,10 @@ public class Main extends Application {
 
 		node.setOnDragOver(event -> {
 			Dragboard dragBoard = event.getDragboard();
-			if (dragBoard.hasFiles() || dragBoard.hasUrl()) {
+			if (dragBoard.hasFiles()) {
+				for (File file : dragBoard.getFiles()) {
+					System.out.println(file.isDirectory());
+				}
 				event.acceptTransferModes(TransferMode.ANY);
 			}
 			// event.consume();
@@ -103,7 +106,6 @@ public class Main extends Application {
 		node.setOnDragDropped(event -> {
 			Dragboard dragBoard = event.getDragboard();
 
-			String url = null;
 			setImageFolder(null);
 
 			if (dragBoard.hasFiles()) {

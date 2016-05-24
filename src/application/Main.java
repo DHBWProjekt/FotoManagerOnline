@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -19,7 +20,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
@@ -38,17 +38,19 @@ public class Main extends Application {
 
 	private List<File> listImages = new ArrayList<File>();
 
-	private AnchorPane centerAnchorPane;
-
 	private ImageView activeImageView;
 
 	private int counter = 0;
+
+	private boolean isVisibleLabelPath = true;
 
 	private BorderPane topBorderPane;
 	private BorderPane bottomBorderPane;
 	private BorderPane centerBorderPane;
 
-	private TranslateTransition animation;
+	private TranslateTransition animationImageView;
+	private FadeTransition animationTopBorderPane;
+	private FadeTransition animationBottomBorderPane;
 
 	private StackPane root;
 	private Scene scene;
@@ -58,23 +60,24 @@ public class Main extends Application {
 			Font.loadFont(getClass().getResource("resources/fontawesome-webfont.ttf").toExternalForm(), 20);
 			root = new StackPane();
 			BorderPane borderPane = new BorderPane();
-			centerAnchorPane = new AnchorPane();
-			centerAnchorPane.getStyleClass().add("centerAnchorPane");
 			this.initAnchorPaneDragAndDrop(borderPane);
-			borderPane.setCenter(centerAnchorPane);
 
 			topBorderPane = new BorderPane();
 			topBorderPane.setCenter(labelPathUp);
 
 			topBorderPane.setOnMouseReleased(e -> {
-				setPath(pathUp, labelPathUp);
+				if (isVisibleLabelPath == true) {
+					setPath(pathUp, labelPathUp);
+				}
 			});
 
 			bottomBorderPane = new BorderPane();
 			bottomBorderPane.setCenter(labelPathDown);
 
 			bottomBorderPane.setOnMouseReleased(e -> {
-				setPath(pathDown, labelPathDown);
+				if (isVisibleLabelPath == true) {
+					setPath(pathDown, labelPathDown);
+				}
 			});
 
 			borderPane.setTop(topBorderPane);
@@ -89,16 +92,47 @@ public class Main extends Application {
 			labelPathDown.getStyleClass().add("lblPath");
 
 			activeImageView = createImageView(borderPane.widthProperty());
-			centerAnchorPane.getChildren().add(activeImageView);
-			root.getChildren().add(centerAnchorPane);
+			// centerAnchorPane.getChildren().add(activeImageView);
+			root.getChildren().add(activeImageView);
 			root.getChildren().add(borderPane);
 
-			animation = new TranslateTransition(new Duration(500.0), activeImageView);
-			animation.setFromX(1200);
-			animation.setToX(0);
-			// animation.setAutoReverse(true);
-			// animation.setCycleCount(Animation.INDEFINITE);
-			animation.setInterpolator(Interpolator.LINEAR);
+			animationImageView = new TranslateTransition(new Duration(500.0), activeImageView);
+			animationImageView.setFromX(root.getWidth());
+			animationImageView.setToX(0);
+			animationImageView.setInterpolator(Interpolator.LINEAR);
+
+			animationBottomBorderPane = new FadeTransition(Duration.millis(250), bottomBorderPane);
+			animationBottomBorderPane.setFromValue(1.0);
+			animationBottomBorderPane.setToValue(0);
+			animationBottomBorderPane.setInterpolator(Interpolator.LINEAR);
+
+			animationTopBorderPane = new FadeTransition(Duration.millis(250), topBorderPane);
+			animationTopBorderPane.setFromValue(1.0);
+			animationTopBorderPane.setToValue(0);
+			animationTopBorderPane.setInterpolator(Interpolator.LINEAR);
+
+			animationBottomBorderPane.setOnFinished(e -> {
+				if (isVisibleLabelPath == true) {
+					animationTopBorderPane.setFromValue(0);
+					animationTopBorderPane.setToValue(1.0);
+					animationBottomBorderPane.setFromValue(0);
+					animationBottomBorderPane.setToValue(1.0);
+					isVisibleLabelPath = false;
+				} else {
+					animationTopBorderPane.setFromValue(1.0);
+					animationTopBorderPane.setToValue(0);
+					animationBottomBorderPane.setFromValue(1.0);
+					animationBottomBorderPane.setToValue(0);
+					isVisibleLabelPath = true;
+				}
+
+			});
+
+			borderPane.setOnMouseClicked(e -> {
+				animationBottomBorderPane.play();
+				animationTopBorderPane.play();
+				System.out.println("Mouse Clicked");
+			});
 
 			scene = new Scene(root, 600, 600);
 			scene.setOnKeyReleased(e -> handleKeyEvent(e));
@@ -126,9 +160,6 @@ public class Main extends Application {
 		node.setOnDragOver(event -> {
 			Dragboard dragBoard = event.getDragboard();
 			if (dragBoard.hasFiles()) {
-				for (File file : dragBoard.getFiles()) {
-					System.out.println(file.isDirectory());
-				}
 				event.acceptTransferModes(TransferMode.ANY);
 			}
 			// event.consume();
@@ -140,7 +171,19 @@ public class Main extends Application {
 			setImageFolder(null);
 
 			if (dragBoard.hasFiles()) {
-				setImageFolder(dragBoard.getFiles());
+				if (dragBoard.getFiles().size() == 1) {
+					if (dragBoard.getFiles().get(0).isDirectory()) {
+						for (File file : dragBoard.getFiles()) {
+							System.out.println(file.isDirectory());
+							setImageFolder(Lib.readImagesFromDirectory(dragBoard.getFiles().get(0)));
+						}
+					} else if (dragBoard.getFiles().get(0).isFile()) {
+						setImageFolder(dragBoard.getFiles());
+					}
+				} else {
+					setImageFolder(dragBoard.getFiles());
+				}
+
 				System.out.println("List of files incoming");
 			}
 			if (getImageFolder() != null) {
@@ -168,13 +211,13 @@ public class Main extends Application {
 	 */
 	public void setPictureToPane(File pictureFile) {
 
-		labelPathUp.setVisible(false);
-		labelPathDown.setVisible(false);
-		labelCenter.setVisible(false);
+		// topBorderPane.setVisible(false);
+		// bottomBorderPane.setVisible(false);
+		centerBorderPane.setVisible(false);
 
 		Image myImage = new Image(pictureFile.toURI().toString());
 		activeImageView.setImage(myImage);
-		animation.playFromStart();
+		animationImageView.playFromStart();
 
 	}
 
@@ -241,7 +284,7 @@ public class Main extends Application {
 	private boolean nextPicture() {
 		if (counter < listImages.size() - 1) {
 			counter++;
-			animation.setFromX(root.getWidth());
+			animationImageView.setFromX(root.getWidth());
 			setPictureToPane(listImages.get(counter));
 			return true;
 		}
@@ -254,7 +297,7 @@ public class Main extends Application {
 	private void lastPicture() {
 		if (counter > 0) {
 			counter--;
-			animation.setFromX(root.getWidth() * (-1));
+			animationImageView.setFromX(root.getWidth() * (-1));
 			setPictureToPane(listImages.get(counter));
 		}
 	}

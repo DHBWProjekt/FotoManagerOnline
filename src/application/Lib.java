@@ -14,7 +14,11 @@ public abstract class Lib {
 
 			@Override
 			public boolean accept(File pathname) {
-				if (pathname.toURI().toString().endsWith(".JPG") == true) {
+				if (pathname.toURI().toString().toLowerCase().endsWith(".jpg") == true) {
+					return true;
+				} else if (pathname.toURI().toString().toLowerCase().endsWith(".png") == true) {
+					return true;
+				} else if (pathname.toURI().toString().toLowerCase().endsWith(".dvi") == true) {
 					return true;
 				}
 				return false;

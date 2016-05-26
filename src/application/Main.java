@@ -2,6 +2,7 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,8 @@ import javafx.util.Duration;
 
 public class Main extends Application {
 
-	private File pathUp;
-	private File pathDown;
+	private File pathUp = new File("");
+	private File pathDown = new File("");
 
 	private Label labelPathUp = new Label("\uf07c");
 	private Label labelPathDown = new Label("\uf07c");
@@ -67,7 +68,7 @@ public class Main extends Application {
 
 			topBorderPane.setOnMouseReleased(e -> {
 				if (isVisibleLabelPath == true) {
-					setPath(pathUp, labelPathUp);
+					setPath(pathUp);
 				}
 			});
 
@@ -76,7 +77,7 @@ public class Main extends Application {
 
 			bottomBorderPane.setOnMouseReleased(e -> {
 				if (isVisibleLabelPath == true) {
-					setPath(pathDown, labelPathDown);
+					setPath(pathDown);
 				}
 			});
 
@@ -260,8 +261,11 @@ public class Main extends Application {
 			File file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
 			try {
 				Files.move(listImages.get(counter2).toPath(), file.toPath());
+			} catch (AccessDeniedException e2) {
+				e2.printStackTrace();
+				// TODO Meldung auf Oberfläche ausgeben
+				System.out.println("Pfad existiert nicht oder wurde noch nicht ausgewählt");
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -308,18 +312,33 @@ public class Main extends Application {
 		 */
 	}
 
-	private void setPath(File path, Label label) {
-
+	/**
+	 * Sets the path of the up or down path depending on the given parameter
+	 * 
+	 * @param path
+	 */
+	private void setPath(File path) {
 		File file = choosePath();
-
 		if (file != null) {
+			if (path.equals(pathUp)) {
 
-			path = file;
-			label.setText(path.toURI().toString());
+				pathUp = file;
+				labelPathUp.setText(pathUp.toURI().toString());
+
+			} else if (path.equals(pathDown)) {
+
+				pathDown = file;
+				labelPathDown.setText(pathDown.toURI().toString());
+			}
 		}
+
 	}
 
-	// *****************************//
+	/**
+	 * Opens a DirectoryChooser that the user can choose the path
+	 * 
+	 * @return file - path that was chosen by the user
+	 */
 	private File choosePath() {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Choose Path");

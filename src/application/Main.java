@@ -288,6 +288,13 @@ public class Main extends Application {
 
 			}
 		}
+		if (pictureCounter == 0) {
+			File finishedFile = new File("./img/fertig.png");
+			System.out.println("Das File exisitert: " + finishedFile.exists());
+			System.out.println("Der Pfad ist : " + finishedFile.getAbsolutePath());
+			Image myImage = new Image(finishedFile.toURI().toString());
+			activeImageView.setImage(myImage);
+		}
 
 	}
 

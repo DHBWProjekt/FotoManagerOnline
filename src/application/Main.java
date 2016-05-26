@@ -253,7 +253,7 @@ public class Main extends Application {
 		System.out.println("Der PictureCounter ist: " + pictureCounter);
 
 		if (pictureCounter > 0) {
-			if (e.getCode().equals(KeyCode.UP)) {
+			if (e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) {
 
 				boolean worked = nextPicture();
 
@@ -262,8 +262,14 @@ public class Main extends Application {
 					counter2--;
 				}
 				System.out.println(listImages.get(counter2).toPath());
-				System.out.println(pathUp.toPath());
-				File file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
+				File file = null;
+				if (e.getCode().equals(KeyCode.UP)) {
+					System.out.println(pathUp.toPath());
+					file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
+				} else if (e.getCode().equals(KeyCode.DOWN)) {
+					System.out.println(pathDown.toPath());
+					file = new File(pathDown.toPath() + "/" + listImages.get(counter2).getName());
+				}
 				try {
 					Files.move(listImages.get(counter2).toPath(), file.toPath());
 				} catch (AccessDeniedException e2) {
@@ -354,6 +360,12 @@ public class Main extends Application {
 		return file;
 	}
 
+	/**
+	 * Increases the pictureCounter every time new pictures are added
+	 * 
+	 * @param picturesInList
+	 *            - number of pictures that are in the list that is loaded
+	 */
 	private void increasePictureCounter(int picturesInList) {
 		System.out.println("Ich erhöhe den PictureCounter");
 		pictureCounter = pictureCounter + picturesInList;
@@ -385,7 +397,9 @@ public class Main extends Application {
 
 	public void setImageFolder(List<File> imageFolder) {
 		if (imageFolder != null) {
-			this.increasePictureCounter(imageFolder.size());
+			increasePictureCounter(imageFolder.size());
+		} else {
+			increasePictureCounter(0);
 		}
 		this.listImages = imageFolder;
 	}

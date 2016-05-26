@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import application.panes.PaneFolderPath;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
@@ -50,6 +51,9 @@ public class Main extends Application {
 	private BorderPane bottomBorderPane;
 	private BorderPane centerBorderPane;
 
+	private PaneFolderPath topPaneFolderPath;
+	private PaneFolderPath bottomPaneFolderPath;
+
 	private TranslateTransition animationImageView;
 	private FadeTransition animationTopBorderPane;
 	private FadeTransition animationBottomBorderPane;
@@ -67,13 +71,14 @@ public class Main extends Application {
 			topBorderPane = new BorderPane();
 			topBorderPane.setCenter(labelPathUp);
 
-			topBorderPane.setOnMouseReleased(e -> {
+			labelPathUp.setOnMouseReleased(e -> {
 				if (isVisibleLabelPath == true) {
 					pathUp = Lib.openFolder();
 					if (pathUp != null) {
-						labelPathUp.setText(pathUp.getName());
+						topPaneFolderPath = new PaneFolderPath(pathUp);
+						topBorderPane.setCenter(topPaneFolderPath);
 					} else {
-						labelPathUp.setText("\uf07c");
+						topBorderPane.setCenter(labelPathUp);
 					}
 				}
 			});
@@ -81,13 +86,14 @@ public class Main extends Application {
 			bottomBorderPane = new BorderPane();
 			bottomBorderPane.setCenter(labelPathDown);
 
-			bottomBorderPane.setOnMouseReleased(e -> {
+			labelPathDown.setOnMouseReleased(e -> {
 				if (isVisibleLabelPath == true) {
 					pathDown = Lib.openFolder();
 					if (pathDown != null) {
-						labelPathDown.setText(pathDown.getName());
+						bottomPaneFolderPath = new PaneFolderPath(pathDown);
+						bottomBorderPane.setCenter(bottomPaneFolderPath);
 					} else {
-						labelPathUp.setText("\uf07c");
+						bottomBorderPane.setCenter(labelPathDown);
 					}
 				}
 			});
@@ -221,9 +227,6 @@ public class Main extends Application {
 	 *            - picture that shall be shown
 	 */
 	public void setPictureToPane(File pictureFile) {
-
-		// topBorderPane.setVisible(false);
-		// bottomBorderPane.setVisible(false);
 		centerBorderPane.setVisible(false);
 
 		Image myImage = new Image(pictureFile.toURI().toString());
@@ -238,7 +241,6 @@ public class Main extends Application {
 	 * @param widthProperty
 	 * @return ImageView
 	 */
-
 	private ImageView createImageView(ReadOnlyDoubleProperty widthProperty) {
 		// maintain aspect ratio
 		ImageView imageView = new ImageView();
@@ -254,7 +256,6 @@ public class Main extends Application {
 	 */
 
 	private void handleKeyEvent(KeyEvent e) {
-
 		System.out.println(e.getCode());
 		System.out.println(counter);
 		System.out.println("Die Größe der Liste ist " + listImages.size());

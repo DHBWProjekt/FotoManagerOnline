@@ -39,6 +39,8 @@ public class Main extends Application {
 
 	private List<File> listImages = new ArrayList<File>();
 
+	private int pictureCounter = 0;
+
 	private ImageView activeImageView;
 
 	private int counter = 0;
@@ -234,7 +236,7 @@ public class Main extends Application {
 		ImageView imageView = new ImageView();
 		// set aspect ratio
 		imageView.setPreserveRatio(true);
-		// resize based on the scnece
+		// resize based on the scene
 		imageView.fitWidthProperty().bind(widthProperty);
 		return imageView;
 	}
@@ -247,33 +249,38 @@ public class Main extends Application {
 
 		System.out.println(e.getCode());
 		System.out.println(counter);
+		System.out.println("Die Größe der Liste ist " + listImages.size());
+		System.out.println("Der PictureCounter ist: " + pictureCounter);
 
-		if (e.getCode().equals(KeyCode.UP)) {
+		if (pictureCounter > 0) {
+			if (e.getCode().equals(KeyCode.UP)) {
 
-			boolean worked = nextPicture();
+				boolean worked = nextPicture();
 
-			int counter2 = counter;
-			if (worked == true) {
-				counter2--;
+				int counter2 = counter;
+				if (worked == true) {
+					counter2--;
+				}
+				System.out.println(listImages.get(counter2).toPath());
+				System.out.println(pathUp.toPath());
+				File file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
+				try {
+					Files.move(listImages.get(counter2).toPath(), file.toPath());
+				} catch (AccessDeniedException e2) {
+					e2.printStackTrace();
+					// TODO Meldung auf Oberfläche ausgeben
+					System.out.println("Pfad existiert nicht oder wurde noch nicht ausgewählt");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				pictureCounter--;
+
+			} else if (e.getCode().equals(KeyCode.RIGHT)) {
+				nextPicture();
+			} else if (e.getCode().equals(KeyCode.LEFT)) {
+				lastPicture();
+
 			}
-			System.out.println(listImages.get(counter2).toPath());
-			System.out.println(pathUp.toPath());
-			File file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
-			try {
-				Files.move(listImages.get(counter2).toPath(), file.toPath());
-			} catch (AccessDeniedException e2) {
-				e2.printStackTrace();
-				// TODO Meldung auf Oberfläche ausgeben
-				System.out.println("Pfad existiert nicht oder wurde noch nicht ausgewählt");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-		} else if (e.getCode().equals(KeyCode.RIGHT)) {
-			nextPicture();
-		} else if (e.getCode().equals(KeyCode.LEFT)) {
-			lastPicture();
-
 		}
 
 	}
@@ -347,6 +354,11 @@ public class Main extends Application {
 		return file;
 	}
 
+	private void increasePictureCounter(int picturesInList) {
+		System.out.println("Ich erhöhe den PictureCounter");
+		pictureCounter = pictureCounter + picturesInList;
+	}
+
 	/*
 	 * Getter and Setter section
 	 */
@@ -372,6 +384,9 @@ public class Main extends Application {
 	}
 
 	public void setImageFolder(List<File> imageFolder) {
+		if (imageFolder != null) {
+			this.increasePictureCounter(imageFolder.size());
+		}
 		this.listImages = imageFolder;
 	}
 }

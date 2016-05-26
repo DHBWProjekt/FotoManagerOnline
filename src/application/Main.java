@@ -24,14 +24,13 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Main extends Application {
 
-	private File pathUp = new File("");
-	private File pathDown = new File("");
+	private File pathUp = null;
+	private File pathDown = null;
 
 	private Label labelPathUp = new Label("\uf07c");
 	private Label labelPathDown = new Label("\uf07c");
@@ -70,7 +69,12 @@ public class Main extends Application {
 
 			topBorderPane.setOnMouseReleased(e -> {
 				if (isVisibleLabelPath == true) {
-					setPath(pathUp);
+					pathUp = Lib.openFolder();
+					if (pathUp != null) {
+						labelPathUp.setText(pathUp.getName());
+					} else {
+						labelPathUp.setText("\uf07c");
+					}
 				}
 			});
 
@@ -79,7 +83,12 @@ public class Main extends Application {
 
 			bottomBorderPane.setOnMouseReleased(e -> {
 				if (isVisibleLabelPath == true) {
-					setPath(pathDown);
+					pathDown = Lib.openFolder();
+					if (pathDown != null) {
+						labelPathDown.setText(pathDown.getName());
+					} else {
+						labelPathUp.setText("\uf07c");
+					}
 				}
 			});
 
@@ -157,7 +166,6 @@ public class Main extends Application {
 	 * @param Node
 	 *            - node that should be DragAndDrop-able
 	 */
-
 	public void initAnchorPaneDragAndDrop(Node node) {
 
 		node.setOnDragOver(event -> {
@@ -265,13 +273,19 @@ public class Main extends Application {
 				File file = null;
 				if (e.getCode().equals(KeyCode.UP)) {
 					System.out.println(pathUp.toPath());
-					file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
+					if (pathDown != null) {
+						file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
+					}
 				} else if (e.getCode().equals(KeyCode.DOWN)) {
 					System.out.println(pathDown.toPath());
-					file = new File(pathDown.toPath() + "/" + listImages.get(counter2).getName());
+					if (pathDown != null) {
+						file = new File(pathDown.toPath() + "/" + listImages.get(counter2).getName());
+					}
 				}
 				try {
-					Files.move(listImages.get(counter2).toPath(), file.toPath());
+					if (file != null) {
+						Files.move(listImages.get(counter2).toPath(), file.toPath());
+					}
 				} catch (AccessDeniedException e2) {
 					e2.printStackTrace();
 					// TODO Meldung auf Oberfläche ausgeben
@@ -333,41 +347,6 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Sets the path of the up or down path depending on the given parameter
-	 * 
-	 * @param path
-	 */
-	private void setPath(File path) {
-		File file = choosePath();
-		if (file != null) {
-			if (path.equals(pathUp)) {
-
-				pathUp = file;
-				labelPathUp.setText(pathUp.toURI().toString());
-
-			} else if (path.equals(pathDown)) {
-
-				pathDown = file;
-				labelPathDown.setText(pathDown.toURI().toString());
-			}
-		}
-
-	}
-
-	/**
-	 * Opens a DirectoryChooser that the user can choose the path
-	 * 
-	 * @return file - path that was chosen by the user
-	 */
-	private File choosePath() {
-		DirectoryChooser chooser = new DirectoryChooser();
-		chooser.setTitle("Choose Path");
-		File file = chooser.showDialog(new Stage());
-
-		return file;
-	}
-
-	/**
 	 * Increases the pictureCounter every time new pictures are added
 	 * 
 	 * @param picturesInList
@@ -376,26 +355,6 @@ public class Main extends Application {
 	private void increasePictureCounter(int picturesInList) {
 		System.out.println("Ich erhöhe den PictureCounter");
 		pictureCounter = pictureCounter + picturesInList;
-	}
-
-	/*
-	 * Getter and Setter section
-	 */
-
-	public File getSavePath() {
-		return pathUp;
-	}
-
-	public void setSavePath(File savePath) {
-		this.pathUp = savePath;
-	}
-
-	public File getDeletePath() {
-		return pathDown;
-	}
-
-	public void setDeletePath(File deletePath) {
-		this.pathDown = deletePath;
 	}
 
 	public List<File> getImageFolder() {

@@ -1,9 +1,13 @@
 package application;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.List;
+
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 public abstract class Lib {
 
@@ -30,4 +34,23 @@ public abstract class Lib {
 
 		return listImageFiles;
 	}
+
+	public static void fehlerMeldung(Exception e) {
+		System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	}
+
+	public static void openExplorer(File file) {
+		try {
+			Desktop.getDesktop().open(file);
+		} catch (Exception e) {
+			Lib.fehlerMeldung(e);
+		}
+	}
+
+	public static File openFolder() {
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle("Ordnerauswahl");
+		return chooser.showDialog(new Stage());
+	}
+
 }

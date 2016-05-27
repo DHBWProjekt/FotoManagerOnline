@@ -38,13 +38,12 @@ public class Main extends Application {
 	private Label labelPathDown = new Label("\uf07c");
 	private Label labelCenter = new Label("\uf03e");
 
-	private List<File> listImages = new ArrayList<File>();
-
-	private int pictureCounter = 0;
+	private List<File> listImagesLoad;
+	private List<File> listImagesLeft = new ArrayList<File>();
+	private File fileImageActiv;
 
 	private ImageView activeImageView;
-
-	private int counter = 0;
+	private Image myImage;
 
 	private boolean isVisibleLabelPath = true;
 
@@ -58,6 +57,7 @@ public class Main extends Application {
 	private PaneFolderPath bottomPaneFolderPath;
 
 	private TranslateTransition animationImageView;
+
 	private FadeTransition animationTopBorderPane;
 	private FadeTransition animationBottomBorderPane;
 
@@ -113,7 +113,6 @@ public class Main extends Application {
 			labelPathDown.getStyleClass().add("lblPath");
 
 			activeImageView = createImageView(borderPane.widthProperty());
-			// centerAnchorPane.getChildren().add(activeImageView);
 			root.getChildren().add(activeImageView);
 			root.getChildren().add(borderPane);
 
@@ -176,7 +175,6 @@ public class Main extends Application {
 	 *            - node that should be DragAndDrop-able
 	 */
 	public void initAnchorPaneDragAndDrop(Node node) {
-
 		node.setOnDragOver(event -> {
 			Dragboard dragBoard = event.getDragboard();
 			if (dragBoard.hasFiles()) {
@@ -187,8 +185,6 @@ public class Main extends Application {
 
 		node.setOnDragDropped(event -> {
 			Dragboard dragBoard = event.getDragboard();
-
-			setImageFolder(null);
 
 			if (dragBoard.hasFiles()) {
 				if (dragBoard.getFiles().size() == 1) {
@@ -206,36 +202,19 @@ public class Main extends Application {
 
 				System.out.println("List of files incoming");
 			}
-			if (getImageFolder() != null) {
+			if (listImagesLoad != null) {
 				/*
 				 * TODO first picture should be shown
 				 */
-
-				setPictureToPane(listImages.get(counter));
-
 				System.out.println("Erstes Bild wird angezeigt");
+				nextPicture();
+
 			}
 
-			event.setDropCompleted(getImageFolder() != null);
+			event.setDropCompleted(listImagesLoad != null);
 			event.consume();
 
 		});
-
-	}
-
-	/**
-	 * Sets the picture on the imageView
-	 * 
-	 * @param pictureFile
-	 *            - picture that shall be shown
-	 */
-	public void setPictureToPane(File pictureFile) {
-		borderPane.getCenter().setVisible(false);
-		activeImageView.setVisible(true);
-
-		Image myImage = new Image(pictureFile.toURI().toString());
-		activeImageView.setImage(myImage);
-		animationImageView.playFromStart();
 
 	}
 
@@ -261,56 +240,42 @@ public class Main extends Application {
 
 	private void handleKeyEvent(KeyEvent e) {
 		System.out.println(e.getCode());
-		System.out.println(counter);
-		System.out.println("Die Größe der Liste ist " + listImages.size());
-		System.out.println("Der PictureCounter ist: " + pictureCounter);
+		System.out.println("Die Größe der Liste ist " + listImagesLoad.size());
 
-		if (pictureCounter > 0) {
-			if (e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) {
+		if (e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) {
 
-				boolean worked = nextPicture();
+			nextPicture();
 
-				int counter2 = counter;
-				if (worked == true) {
-					counter2--;
+			System.out.println(fileImageActiv.toPath());
+			File file = null;
+			if (e.getCode().equals(KeyCode.UP)) {
+				System.out.println(pathUp.toPath());
+				if (pathUp != null) {
+					file = new File(pathUp.toPath() + "/" + fileImageActiv.getName());
+					System.out.println(file.toString());
 				}
-				System.out.println(listImages.get(counter2).toPath());
-				File file = null;
-				if (e.getCode().equals(KeyCode.UP)) {
-					System.out.println(pathUp.toPath());
-					if (pathUp != null) {
-						file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
-						System.out.println(file.toString());
-					}
-				} else if (e.getCode().equals(KeyCode.DOWN)) {
-					System.out.println(pathDown.toPath());
-					if (pathDown != null) {
-						file = new File(pathDown.toPath() + "/" + listImages.get(counter2).getName());
-					}
+			} else if (e.getCode().equals(KeyCode.DOWN)) {
+				System.out.println(pathDown.toPath());
+				if (pathDown != null) {
+					file = new File(pathDown.toPath() + "/" + fileImageActiv.getName());
 				}
-				try {
-					if (file != null) {
-						Files.move(listImages.get(counter2).toPath(), file.toPath());
-					}
-				} catch (AccessDeniedException e2) {
-					e2.printStackTrace();
-					// TODO Meldung auf Oberfläche ausgeben
-					System.out.println("Pfad existiert nicht oder wurde noch nicht ausgewählt");
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				pictureCounter--;
-
-			} else if (e.getCode().equals(KeyCode.RIGHT)) {
-				nextPicture();
-			} else if (e.getCode().equals(KeyCode.LEFT)) {
-				lastPicture();
-
 			}
-		}
-		if (pictureCounter == 0) {
-			borderPane.setCenter(new PaneFinished());
-			activeImageView.setVisible(false);
+			try {
+				if (file != null) {
+					Files.move(fileImageActiv.toPath(), file.toPath());
+				}
+			} catch (AccessDeniedException e2) {
+				e2.printStackTrace();
+				// TODO Meldung auf Oberfläche ausgeben
+				System.out.println("Pfad existiert nicht oder wurde noch nicht ausgewählt");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+		} else if (e.getCode().equals(KeyCode.RIGHT)) {
+			nextPicture();
+		} else if (e.getCode().equals(KeyCode.LEFT)) {
+			lastPicture();
 		}
 
 	}
@@ -322,54 +287,64 @@ public class Main extends Application {
 	 * @return boolean - if the stepping forward was successful
 	 */
 
-	private boolean nextPicture() {
-		if (counter < listImages.size() - 1) {
-			counter++;
+	private void nextPicture() {
+		System.out.println(listImagesLoad.size());
+		if (listImagesLoad.size() > 0) {
+			if (fileImageActiv != null) {
+				listImagesLeft.add(0, fileImageActiv);
+			}
+			fileImageActiv = listImagesLoad.remove(0);
+			System.out.println(fileImageActiv);
+			myImage = new Image(fileImageActiv.toURI().toString());
+
 			animationImageView.setFromX(root.getWidth());
-			setPictureToPane(listImages.get(counter));
-			return true;
+			setPictureToPane();
+		} else {
+			activeImageView.setVisible(false);
+			borderPane.setCenter(new PaneFinished());
 		}
-		return false;
 	}
 
 	/**
 	 * Sets the counter one step back, if the counter is bigger than Zero.
 	 */
 	private void lastPicture() {
-		if (counter > 0) {
-			counter--;
+		if (listImagesLeft.size() > 0) {
+			if (fileImageActiv != null) {
+				listImagesLoad.add(0, fileImageActiv);
+			}
+			fileImageActiv = listImagesLeft.remove(0);
+			myImage = new Image(fileImageActiv.toURI().toString());
 			animationImageView.setFromX(root.getWidth() * (-1));
-			setPictureToPane(listImages.get(counter));
+			setPictureToPane();
 		}
 	}
 
-	private void mooveFile() {
+	/**
+	 * Sets the picture on the imageView
+	 * 
+	 * @param pictureFile
+	 *            - picture that shall be shown
+	 */
+	public void setPictureToPane() {
+		borderPane.getCenter().setVisible(false);
+		activeImageView.setVisible(true);
+		System.out.println("Index of root: " + root.getChildren().indexOf(borderPane));
+
+		if (fileImageActiv != null) {
+			activeImageView.setImage(myImage);
+			animationImageView.playFromStart();
+		}
+	}
+
+	private void moveFile() {
 		/*
 		 * TODO
 		 */
 	}
 
-	/**
-	 * Increases the pictureCounter every time new pictures are added
-	 * 
-	 * @param picturesInList
-	 *            - number of pictures that are in the list that is loaded
-	 */
-	private void increasePictureCounter(int picturesInList) {
-		System.out.println("Ich erhöhe den PictureCounter");
-		pictureCounter = pictureCounter + picturesInList;
-	}
-
-	public List<File> getImageFolder() {
-		return listImages;
-	}
-
 	public void setImageFolder(List<File> imageFolder) {
-		if (imageFolder != null) {
-			increasePictureCounter(imageFolder.size());
-		} else {
-			increasePictureCounter(0);
-		}
-		this.listImages = imageFolder;
+		listImagesLoad = imageFolder;
+		System.out.println(listImagesLoad.size() + " Bilder wurden in die Liste geladen");
 	}
 }

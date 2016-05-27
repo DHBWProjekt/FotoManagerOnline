@@ -3,7 +3,7 @@ package application;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.stage.DirectoryChooser;
@@ -30,9 +30,17 @@ public abstract class Lib {
 		};
 		imageFiles = directory.listFiles(ff);
 		System.out.println("Anzahl Files: " + imageFiles.length);
-		List<File> listImageFiles = Arrays.asList(imageFiles);
+		List<File> listImageFiles = arrayToList(imageFiles);
 
 		return listImageFiles;
+	}
+
+	public static List<File> arrayToList(File[] fileArray) {
+		List<File> listTemp = new ArrayList<File>();
+		for (int i = 0; i < fileArray.length; i++) {
+			listTemp.add(fileArray[i]);
+		}
+		return listTemp;
 	}
 
 	public static void fehlerMeldung(Exception e) {

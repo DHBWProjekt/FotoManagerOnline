@@ -244,25 +244,24 @@ public class Main extends Application {
 
 		if (e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) {
 
-			nextPicture();
-
 			System.out.println(fileImageActiv.toPath());
 			File file = null;
 			if (e.getCode().equals(KeyCode.UP)) {
-				System.out.println(pathUp.toPath());
 				if (pathUp != null) {
+					System.out.println(pathUp.toPath());
 					file = new File(pathUp.toPath() + "/" + fileImageActiv.getName());
-					System.out.println(file.toString());
 				}
 			} else if (e.getCode().equals(KeyCode.DOWN)) {
-				System.out.println(pathDown.toPath());
 				if (pathDown != null) {
+					System.out.println(pathDown.toPath());
 					file = new File(pathDown.toPath() + "/" + fileImageActiv.getName());
 				}
 			}
 			try {
 				if (file != null) {
 					Files.move(fileImageActiv.toPath(), file.toPath());
+					fileImageActiv = null;
+					nextPicture();
 				}
 			} catch (AccessDeniedException e2) {
 				e2.printStackTrace();

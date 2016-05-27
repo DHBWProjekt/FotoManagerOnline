@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import application.panes.PaneFinished;
 import application.panes.PaneFolderPath;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -47,6 +48,8 @@ public class Main extends Application {
 
 	private boolean isVisibleLabelPath = true;
 
+	private BorderPane borderPane;
+
 	private BorderPane topBorderPane;
 	private BorderPane bottomBorderPane;
 	private BorderPane centerBorderPane;
@@ -65,7 +68,7 @@ public class Main extends Application {
 		try {
 			Font.loadFont(getClass().getResource("resources/fontawesome-webfont.ttf").toExternalForm(), 20);
 			root = new StackPane();
-			BorderPane borderPane = new BorderPane();
+			borderPane = new BorderPane();
 			this.initAnchorPaneDragAndDrop(borderPane);
 
 			topBorderPane = new BorderPane();
@@ -227,7 +230,8 @@ public class Main extends Application {
 	 *            - picture that shall be shown
 	 */
 	public void setPictureToPane(File pictureFile) {
-		centerBorderPane.setVisible(false);
+		borderPane.getCenter().setVisible(false);
+		activeImageView.setVisible(true);
 
 		Image myImage = new Image(pictureFile.toURI().toString());
 		activeImageView.setImage(myImage);
@@ -274,8 +278,9 @@ public class Main extends Application {
 				File file = null;
 				if (e.getCode().equals(KeyCode.UP)) {
 					System.out.println(pathUp.toPath());
-					if (pathDown != null) {
+					if (pathUp != null) {
 						file = new File(pathUp.toPath() + "/" + listImages.get(counter2).getName());
+						System.out.println(file.toString());
 					}
 				} else if (e.getCode().equals(KeyCode.DOWN)) {
 					System.out.println(pathDown.toPath());
@@ -304,11 +309,8 @@ public class Main extends Application {
 			}
 		}
 		if (pictureCounter == 0) {
-			File finishedFile = new File("./img/fertig.png");
-			System.out.println("Das File exisitert: " + finishedFile.exists());
-			System.out.println("Der Pfad ist : " + finishedFile.getAbsolutePath());
-			Image myImage = new Image(finishedFile.toURI().toString());
-			activeImageView.setImage(myImage);
+			borderPane.setCenter(new PaneFinished());
+			activeImageView.setVisible(false);
 		}
 
 	}

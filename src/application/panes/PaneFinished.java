@@ -8,12 +8,12 @@ public class PaneFinished extends HBox {
 	private Label lblIcon;
 
 	public PaneFinished() {
-		super(15);
+		super(35);
 		lblText = new Label("Fertig");
 		lblIcon = new Label("\uf164");
 
-		lblText.getStyleClass().add("lblCenter");
-		lblIcon.getStyleClass().add("lblCenter");
+		lblText.getStyleClass().add("lblTextCenter");
+		lblIcon.getStyleClass().add("lblIconCenter");
 
 		getStyleClass().add("centerBP");
 

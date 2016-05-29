@@ -242,9 +242,7 @@ public class Main extends Application {
 		System.out.println(e.getCode());
 		System.out.println("Die Größe der Liste ist " + listImagesLoad.size());
 
-		if (e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) {
-
-			System.out.println(fileImageActiv.toPath());
+		if ((e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) && fileImageActiv != null) {
 			File file = null;
 			if (e.getCode().equals(KeyCode.UP)) {
 				if (pathUp != null) {

@@ -256,6 +256,7 @@ public class Main extends Application {
 						System.out.println(pathDown.toPath());
 						file = new File(pathDown.toPath() + "/" + fileImageActiv.getName());
 					}
+
 				}
 				try {
 					if (file != null) {

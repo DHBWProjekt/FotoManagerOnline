@@ -3,6 +3,12 @@ package application.panes;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
+/**
+ * The pane that is shown when the last picture in the list is ordered
+ * 
+ * @author kai
+ *
+ */
 public class PaneFinished extends HBox {
 	private Label lblText;
 	private Label lblIcon;

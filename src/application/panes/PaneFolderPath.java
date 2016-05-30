@@ -6,6 +6,12 @@ import application.Lib;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
+/**
+ * The pane is shown when the path is not selected
+ * 
+ * @author kai
+ *
+ */
 public class PaneFolderPath extends HBox {
 
 	private Label lblText;

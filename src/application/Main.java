@@ -242,41 +242,46 @@ public class Main extends Application {
 		System.out.println(e.getCode());
 		System.out.println("Die Größe der Liste ist " + listImagesLoad.size());
 
-		if (e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) {
+		if (listImagesLoad.size() > 0) {
+			if (e.getCode().equals(KeyCode.UP) || e.getCode().equals(KeyCode.DOWN)) {
 
-			System.out.println(fileImageActiv.toPath());
-			File file = null;
-			if (e.getCode().equals(KeyCode.UP)) {
-				if (pathUp != null) {
-					System.out.println(pathUp.toPath());
-					file = new File(pathUp.toPath() + "/" + fileImageActiv.getName());
+				File file = null;
+				if (e.getCode().equals(KeyCode.UP)) {
+					if (pathUp != null) {
+						System.out.println(pathUp.toPath());
+						file = new File(pathUp.toPath() + "/" + fileImageActiv.getName());
+					}
+				} else if (e.getCode().equals(KeyCode.DOWN)) {
+					if (pathDown != null) {
+						System.out.println(pathDown.toPath());
+						file = new File(pathDown.toPath() + "/" + fileImageActiv.getName());
+					}
 				}
-			} else if (e.getCode().equals(KeyCode.DOWN)) {
-				if (pathDown != null) {
-					System.out.println(pathDown.toPath());
-					file = new File(pathDown.toPath() + "/" + fileImageActiv.getName());
+				try {
+					if (file != null) {
+						Files.move(fileImageActiv.toPath(), file.toPath());
+						fileImageActiv = null;
+						nextPicture();
+					}
+				} catch (AccessDeniedException e2) {
+					e2.printStackTrace();
+					// TODO Meldung auf Oberfläche ausgeben
+					System.out.println("Pfad existiert nicht oder wurde noch nicht ausgewählt");
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
-			}
-			try {
-				if (file != null) {
-					Files.move(fileImageActiv.toPath(), file.toPath());
-					fileImageActiv = null;
-					nextPicture();
-				}
-			} catch (AccessDeniedException e2) {
-				e2.printStackTrace();
-				// TODO Meldung auf Oberfläche ausgeben
-				System.out.println("Pfad existiert nicht oder wurde noch nicht ausgewählt");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
 
-		} else if (e.getCode().equals(KeyCode.RIGHT)) {
-			nextPicture();
-		} else if (e.getCode().equals(KeyCode.LEFT)) {
-			lastPicture();
+			} else if (e.getCode().equals(KeyCode.RIGHT)) {
+				nextPicture();
+			} else if (e.getCode().equals(KeyCode.LEFT)) {
+				lastPicture();
+			}
 		}
 
+		else {
+			activeImageView.setVisible(false);
+			borderPane.setCenter(new PaneFinished());
+		}
 	}
 
 	/**
@@ -288,6 +293,11 @@ public class Main extends Application {
 
 	private void nextPicture() {
 		System.out.println(listImagesLoad.size());
+
+		/*
+		 * TODO Abfrage kann entfernt werden, da schon in HandleKeyEvent
+		 * abgeprüft
+		 */
 		if (listImagesLoad.size() > 0) {
 			if (fileImageActiv != null) {
 				listImagesLeft.add(0, fileImageActiv);
@@ -298,10 +308,11 @@ public class Main extends Application {
 
 			animationImageView.setFromX(root.getWidth());
 			setPictureToPane();
-		} else {
-			activeImageView.setVisible(false);
-			borderPane.setCenter(new PaneFinished());
 		}
+		// } else {
+		// activeImageView.setVisible(false);
+		// borderPane.setCenter(new PaneFinished());
+		// }
 	}
 
 	/**

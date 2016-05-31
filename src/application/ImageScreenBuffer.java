@@ -106,6 +106,14 @@ public class ImageScreenBuffer {
 		}
 	}
 
+	public int getBufferSizeRight() {
+		return listImageAndFileRight.size();
+	}
+
+	public int getBufferSizeLeft() {
+		return listFileImagesLeft.size();
+	}
+
 	public ImageAndFile getImageAndFileActive() {
 		return imageAndFileActive;
 	}

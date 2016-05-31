@@ -26,7 +26,12 @@ public class ImageScreenBuffer {
 
 	private void initListImageAndFileRight() {
 		listImageAndFileRight = new ArrayList<ImageAndFile>();
-		for (int i = 0; i < 4; i++)
+		int imageBufferSize = 4;
+		if (imageBufferSize > listFileImagesRight.size()) {
+			imageBufferSize = listFileImagesRight.size();
+		}
+
+		for (int i = 0; i < imageBufferSize; i++)
 			listImageAndFileRight.add(new ImageAndFile(listFileImagesRight.remove(0)));
 	}
 
@@ -40,7 +45,8 @@ public class ImageScreenBuffer {
 			imageAndFileActive = null;
 			checkBufferSizeLeft();
 		}
-
+		imageAndFileActive = null;
+		System.out.println("MoveLeft: SizeRight: " + listImageAndFileRight.size());
 		if (listImageAndFileRight.size() > 0) {
 			imageAndFileActive = listImageAndFileRight.remove(0);
 			if (listFileImagesRight.size() > 0) {
@@ -55,7 +61,8 @@ public class ImageScreenBuffer {
 			imageAndFileActive = null;
 			checkBufferSizeRight();
 		}
-
+		System.out.println("MoveRight: SizeLeft: " + listImageAndFileLeft.size());
+		imageAndFileActive = null;
 		if (listImageAndFileLeft.size() > 0) {
 			imageAndFileActive = listImageAndFileLeft.remove(0);
 			if (listFileImagesLeft.size() > 0) {

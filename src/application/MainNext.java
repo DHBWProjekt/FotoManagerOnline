@@ -54,7 +54,7 @@ public class MainNext extends Application {
 			Font.loadFont(getClass().getResource("resources/fontawesome-webfont.ttf").toExternalForm(), 20);
 			root = new StackPane();
 			borderPane = new BorderPane();
-			this.initDragAndDrop(borderPane);
+			this.initDragAndDrop(root);
 
 			initTopBorderPane();
 			initBottomBorderPane();

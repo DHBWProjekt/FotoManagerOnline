@@ -45,21 +45,17 @@ public class ImageScreen extends StackPane {
 	}
 
 	public void nextImage() {
-		if (isBuffer.getBufferSizeRight() > 0 && isBuffer.getImageAndFileActive() != null) {
-			isBuffer.moveLeft();
-			setImageInBackground();
-			animationCenterToLeft();
-			animationRightToCenter();
-		}
+		isBuffer.moveLeft();
+		setImageInBackground();
+		animationCenterToLeft();
+		animationRightToCenter();
 	}
 
 	public void lastImage() {
-		if (isBuffer.getBufferSizeRight() > 0 && isBuffer.getImageAndFileActive() != null) {
-			isBuffer.moveRight();
-			setImageInBackground();
-			animationCenterToRight();
-			animationLeftToCenter();
-		}
+		isBuffer.moveRight();
+		setImageInBackground();
+		animationCenterToRight();
+		animationLeftToCenter();
 	}
 
 	public void up(File folderUp) {
